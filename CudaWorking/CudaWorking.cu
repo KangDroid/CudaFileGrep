@@ -111,7 +111,6 @@ int main(void) {
         fst >> tmp;
         read_input[i] = new char[LINE_LENGTH]; // The Null value
         strcpy(read_input[i], tmp.c_str());
-        //printf("%s\n", read_input[i]);
     }
 
     int ctr_devarr = line_ctr * LINE_LENGTH;
@@ -138,7 +137,6 @@ int main(void) {
     gpuErrchk(cudaMemcpy(compStringLength, &stringValLength, sizeof(int), cudaMemcpyHostToDevice));
     gpuErrchk(cudaMemcpy(real_dev, dev_Array, sizeof(char) * ctr_devarr, cudaMemcpyHostToDevice));
 
-    printf("Block: %d\n", BLOCK_CTR);
     compareString << <BLOCK_CTR, LN_LIMIT_PER_BLOCK >> > (real_dev, dev_com_string, compStringLength, dev_rs, limit_exceed_chk);
     gpuErrchk(cudaMemcpy(returnArray, test_array, sizeof(int) * line_ctr, cudaMemcpyDeviceToHost));
     gpuErrchk(cudaMemcpy(rs, dev_rs, sizeof(struct returnStructure) * line_ctr, cudaMemcpyDeviceToHost));
