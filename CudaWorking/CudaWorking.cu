@@ -63,24 +63,6 @@ __global__ void compareString(char* ptr, char* compString, int* compare_length, 
     }
 }
 
-__global__ void printArray(char* ptr, int* ctr) {
-    char arr_tmp[3];
-    int st_array = (blockDim.x * blockIdx.x + threadIdx.x) * LINE_LENGTH; // To use thread and block more efficiently, use x/y + thread idx
-    //printf("st_Array: %d\n", st_array);
-
-    // The Process goes on - Making Array
-    for (int i = 0; i < LINE_LENGTH; i++, st_array++) {
-        if (ptr[st_array] != 0) {
-            arr_tmp[i] = ptr[st_array];
-        } else {
-            arr_tmp[i] = 0;
-            break;
-        }
-    }
-    //printf("The Index: %d and array index is: %d\n", st_array, (blockDim.x * blockIdx.x + threadIdx.x));
-    ctr[(blockDim.x * blockIdx.x + threadIdx.x)] = 10;
-}
-
 int main(void) {
 
     // Host Constant variables.
@@ -158,7 +140,6 @@ int main(void) {
 
     printf("Block: %d\n", BLOCK_CTR);
     compareString << <BLOCK_CTR, LN_LIMIT_PER_BLOCK >> > (real_dev, dev_com_string, compStringLength, dev_rs, limit_exceed_chk);
-    //printArray << <20, 512 >> > (real_dev, test_array);
     gpuErrchk(cudaMemcpy(returnArray, test_array, sizeof(int) * line_ctr, cudaMemcpyDeviceToHost));
     gpuErrchk(cudaMemcpy(rs, dev_rs, sizeof(struct returnStructure) * line_ctr, cudaMemcpyDeviceToHost));
     for (int i = 0; i < line_ctr; i++) {
