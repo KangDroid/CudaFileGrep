@@ -113,6 +113,7 @@ int main(void) {
         strcpy(read_input[i], tmp.c_str());
     }
 
+    // Creating first dimensional Array,
     int ctr_devarr = line_ctr * LINE_LENGTH;
     dev_Array = new char[ctr_devarr];
     int ctr_arr_aux = 0;
@@ -137,9 +138,14 @@ int main(void) {
     gpuErrchk(cudaMemcpy(compStringLength, &stringValLength, sizeof(int), cudaMemcpyHostToDevice));
     gpuErrchk(cudaMemcpy(real_dev, dev_Array, sizeof(char) * ctr_devarr, cudaMemcpyHostToDevice));
 
+    // Kernel Call for comparing.
     compareString << <BLOCK_CTR, LN_LIMIT_PER_BLOCK >> > (real_dev, dev_com_string, compStringLength, dev_rs, limit_exceed_chk);
+
+    // Get results back from GPU Memory.
     gpuErrchk(cudaMemcpy(returnArray, test_array, sizeof(int) * line_ctr, cudaMemcpyDeviceToHost));
     gpuErrchk(cudaMemcpy(rs, dev_rs, sizeof(struct returnStructure) * line_ctr, cudaMemcpyDeviceToHost));
+
+    // Print result
     for (int i = 0; i < line_ctr; i++) {
         if (rs[i].isSet == 1) {
             printf("Lines: %d\n", rs[i].lines + 1);
